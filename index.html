@@ -6,39 +6,128 @@
   <title>오늘의 기도제목</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f5f7; color: #333; padding: 20px 16px; height: 100vh; display: flex; flex-direction: column; }
     
-    /* 상단 공통 안내 헤더 */
-    .header { text-align: center; margin: 0 auto 16px; padding: 16px; background: #ffffff; border-radius: 16px; max-width: 480px; width: 100%; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    /* 좌우 여백 제거 (padding-left/right: 0) */
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+      background: #f4f5f7; 
+      color: #333; 
+      padding: 16px 0 30px; 
+      min-height: 100vh; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+    }
+    
+    /* 상단 공통 안내 헤더 (화면 가로 꽉 채우기) */
+    .header { 
+      text-align: center; 
+      margin-bottom: 16px; 
+      padding: 16px 12px; 
+      background: #ffffff; 
+      width: 100%; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
+    }
     .header h1 { font-size: 20px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
     .header p { font-size: 13px; color: #666; line-height: 1.4; }
 
-    /* 첫 화면: 한눈에 들어오는 바둑판 배열 (스크롤 최소화) */
-    .card-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; max-width: 480px; margin: 0 auto; width: 100%; }
-    .card-item { width: calc(33.33% - 8px); background: transparent; text-align: center; cursor: pointer; }
+    /* 첫 화면: 좌우 여백 없는 바둑판 배열 */
+    .card-grid { 
+      display: flex; 
+      flex-wrap: wrap; 
+      width: 100%; 
+      gap: 4px; /* 카드 간 최소 간격만 유지 */
+      padding: 0 2px;
+    }
+    .card-item { 
+      width: calc(33.33% - 3px); 
+      text-align: center; 
+      cursor: pointer; 
+    }
     
-    /* 이름은 크고 강조되게, 이미지는 썸네일처럼 작게 */
-    .card-name { font-size: 18px; font-weight: 800; color: #2563eb; margin-bottom: 6px; word-break: keep-all; }
-    .card-item img { width: 100%; aspect-ratio: 4/5; object-fit: cover; border-radius: 12px; box-shadow: 0 3px 8px rgba(0,0,0,0.15); border: 2px solid #fff; }
-
-    /* 모바일 아주 작은 화면(예: 아이폰 SE) 대응 - 2줄 배치 */
-    @media (max-width: 360px) {
-      .card-item { width: calc(50% - 6px); }
+    /* 큰 이름 표시 */
+    .card-name { 
+      font-size: 17px; 
+      font-weight: 800; 
+      color: #2563eb; 
+      margin-bottom: 4px; 
+      word-break: keep-all; 
+    }
+    
+    .card-item img { 
+      width: 100%; 
+      aspect-ratio: 4/5; 
+      object-fit: cover; 
+      border-radius: 6px; 
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1); 
+      display: block; 
     }
 
-    /* 원본 이미지 확대창 (모달) & 네비게이션 */
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; }
+    /* 초소형 화면(아이폰 SE 등) 2열 배치 */
+    @media (max-width: 340px) {
+      .card-item { width: calc(50% - 2px); }
+    }
+
+    /* 원본 이미지 확대창 (모달) */
+    .modal { 
+      display: none; 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100vw; 
+      height: 100vh; 
+      background: rgba(0,0,0,0.95); 
+      z-index: 1000; 
+      justify-content: center; 
+      align-items: center; 
+      flex-direction: column; 
+    }
     
-    /* 모달 내부 이미지와 화살표 컨테이너 */
-    .modal-content { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 500px; padding: 0 10px; }
-    .modal img { max-width: 75%; max-height: 85vh; border-radius: 8px; object-fit: contain; }
+    /* 이미지와 화살표를 감싸는 레이어 */
+    .img-wrapper { 
+      position: relative; 
+      width: 100%; 
+      max-width: 500px; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+    }
+    .img-wrapper img { 
+      width: 100%; 
+      max-height: 85vh; 
+      object-fit: contain; 
+      display: block; 
+    }
     
-    /* 좌우 화살표 버튼 */
-    .nav-btn { color: white; font-size: 32px; padding: 15px 10px; cursor: pointer; user-select: none; opacity: 0.8; }
-    .nav-btn:active { opacity: 1; transform: scale(1.1); }
+    /* ★ 이미지 위에 겹치는 반투명 화살표 버튼 ★ */
+    .nav-btn { 
+      position: absolute; 
+      top: 50%; 
+      transform: translateY(-50%); 
+      width: 44px; 
+      height: 44px; 
+      background: rgba(0, 0, 0, 0.55); 
+      color: #ffffff; 
+      border-radius: 50%; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      font-size: 20px; 
+      cursor: pointer; 
+      user-select: none; 
+      z-index: 10; 
+      backdrop-filter: blur(2px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .nav-btn:active { 
+      background: rgba(0, 0, 0, 0.85); 
+      transform: translateY(-50%) scale(0.92); 
+    }
+    #prevBtn { left: 10px; }
+    #nextBtn { right: 10px; }
     
     /* 닫기 안내 텍스트 */
-    .close-guide { color: #aaaaaa; font-size: 14px; margin-top: 16px; margin-bottom: 20px; }
+    .close-guide { color: #aaaaaa; font-size: 13px; margin-top: 14px; }
   </style>
 </head>
 <body>
@@ -46,15 +135,15 @@
   <!-- 공통 헤더 -->
   <div class="header">
     <h1>🙏 오늘의 달고나</h1>
-    <p>이름을 터치하시면 크게 보실 수 있습니다.<br>확대 후 좌우로 넘겨보세요.</p>
+    <p>오늘 마음 모아 함께 기도할 고등부 가족 5명입니다. <br>이름을 누르면 기도제목을 크게 볼 수 있어요!</p>
   </div>
 
   <!-- 작게 모아보는 썸네일 영역 -->
   <div class="card-grid" id="cardGrid"></div>
 
-  <!-- 확대 모달창 (좌우 이동 버튼 포함) -->
+  <!-- 확대 모달창 (이미지 위 화살표 겹침 적용) -->
   <div class="modal" id="imageModal">
-    <div class="modal-content">
+    <div class="img-wrapper">
       <div class="nav-btn" id="prevBtn">❮</div>
       <img id="modalImg" src="" alt="기도제목 확대보기">
       <div class="nav-btn" id="nextBtn">❯</div>
@@ -66,16 +155,14 @@
     const TOTAL_CARDS = 12; 
     const SHOW_COUNT = 5;
 
-    // ★중요★ 50명의 이름을 순서대로 적어주세요. 
-    // card1.jpg의 주인이 첫 번째 텍스트가 됩니다. (큰 따옴표 안에 이름 입력)
-    // 현재는 테스트를 위해 '홍길동1', '홍길동2' 식으로 50번까지 임시 입력되어 있습니다.
+    // ★ 50명의 실제 교인 이름을 순서대로 입력해주세요 ★
     const memberNames = [
-      "빈칸(무시)", // 0번째는 비워둡니다 (수정하지 마세요)
+      "빈칸(무시)", // 0번째는 비워둡니다
       "김철수", "홍길동", "이영희", "박성도", "최집사", // 1~5번 이름
-      ...Array.from({length: 7}, (_, i) => `성도 ${i + 6}`) // 6~50번 자동 생성 (나중에 실제 이름 50개로 쭉 적어주시면 됩니다)
+      ...Array.from({length: 45}, (_, i) => `성도 ${i + 6}`) // 6~50번 임시 이름
     ];
 
-    // 날짜 기반 난수 생성 (하루 동안은 접속자 모두 동일한 결과)
+    // 오늘 날짜 기반 난수 생성 (접속자 모두 동일한 결과)
     const today = new Date();
     const dateSeed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
 
@@ -97,32 +184,28 @@
       [cardNumbers[i], cardNumbers[j]] = [cardNumbers[j], cardNumbers[i]];
     }
 
-    // 섞인 번호 중 상위 5개 추출
+    // 상위 5개 추출
     const todayCards = cardNumbers.slice(0, SHOW_COUNT);
 
     const container = document.getElementById('cardGrid');
     const modal = document.getElementById('imageModal');
     const modalImg = document.getElementById('modalImg');
     
-    let currentModalIndex = 0; // 확대 화면에서 현재 보고 있는 카드의 순서(0~4)
+    let currentModalIndex = 0;
 
-    // 화면에 5명의 이름과 작은 이미지(썸네일) 출력
+    // 화면에 5명의 이름과 작은 이미지 출력
     todayCards.forEach((num, index) => {
       const item = document.createElement('div');
       item.className = 'card-item';
       
-      // 이름 부분 생성
       const nameTag = document.createElement('div');
       nameTag.className = 'card-name';
-      // 만약 배열에 이름이 다 채워지지 않았으면 '기도제목 #번호'로 출력되게 예외처리
       nameTag.innerText = memberNames[num] || `기도제목 ${num}`; 
 
-      // 이미지 부분 생성
       const img = document.createElement('img');
       img.src = `cards/card${num}.jpg`; 
       img.alt = `기도제목 ${num}`;
       
-      // 썸네일 클릭 시 해당 이미지를 확대하고, 좌우 스와이프 기준점 설정
       item.onclick = () => {
         currentModalIndex = index;
         updateModalImage();
@@ -134,31 +217,28 @@
       container.appendChild(item);
     });
 
-    // 모달 이미지 업데이트 함수
+    // 모달 이미지 업데이트
     function updateModalImage() {
       const currentCardNum = todayCards[currentModalIndex];
       modalImg.src = `cards/card${currentCardNum}.jpg`;
     }
 
-    // 이전 화살표 (❮) 버튼 클릭
+    // 이전 화살표 (❮) 클릭
     document.getElementById('prevBtn').onclick = (e) => {
-      e.stopPropagation(); // 모달이 닫히지 않게 클릭 이벤트 차단
-      // 첫 번째 이미지에서 이전으로 넘기면 맨 마지막 이미지로 이동
+      e.stopPropagation();
       currentModalIndex = (currentModalIndex - 1 + SHOW_COUNT) % SHOW_COUNT; 
       updateModalImage();
     };
 
-    // 다음 화살표 (❯) 버튼 클릭
+    // 다음 화살표 (❯) 클릭
     document.getElementById('nextBtn').onclick = (e) => {
       e.stopPropagation(); 
-      // 마지막 이미지에서 다음으로 넘기면 다시 첫 번째 이미지로 이동
       currentModalIndex = (currentModalIndex + 1) % SHOW_COUNT; 
       updateModalImage();
     };
 
-    // 화살표 밖의 어두운 배경이나 이미지를 클릭하면 모달 닫기
+    // 배경 터치 시 모달 닫기
     modal.onclick = (e) => {
-      // 좌우 화살표를 누른 게 아니라면 모달 닫기
       if (e.target.id !== 'prevBtn' && e.target.id !== 'nextBtn') {
         modal.style.display = 'none';
       }
