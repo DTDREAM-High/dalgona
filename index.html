@@ -2,8 +2,9 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>오늘의 기도제목</title>
+  <!-- 모바일 손가락 확대(Pinch Zoom) 허용 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>오늘의 달고나</title>
   <style>
     :root {
       --bg-color: #f8fafc;
@@ -28,7 +29,6 @@
       padding: 24px 16px 40px;
     }
 
-    /* 모바일 전용 컨테이너 */
     .app-container {
       width: 100%;
       max-width: 430px;
@@ -37,7 +37,7 @@
       gap: 16px;
     }
 
-    /* 고급스러운 헤더 카드 */
+    /* 헤더 카드는 동일 */
     .header {
       background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
       border: 1px solid var(--border-color);
@@ -56,7 +56,6 @@
       padding: 4px 12px;
       border-radius: 20px;
       margin-bottom: 10px;
-      letter-spacing: -0.3px;
     }
 
     .header h1 {
@@ -64,7 +63,6 @@
       font-weight: 800;
       color: var(--text-main);
       margin-bottom: 6px;
-      letter-spacing: -0.5px;
     }
 
     .header p {
@@ -74,14 +72,12 @@
       word-break: keep-all;
     }
 
-    /* 이름 전용 카드 리스트 */
     .name-list {
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
 
-    /* 터치하고 싶게 만드는 세련된 이름 카드 */
     .name-card {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
@@ -95,7 +91,6 @@
       transition: all 0.2s ease;
     }
 
-    /* 모바일 터치 시 눌리는 효과 */
     .name-card:active {
       transform: scale(0.98);
       background: var(--primary-light);
@@ -108,7 +103,6 @@
       gap: 14px;
     }
 
-    /* 번호 배지 */
     .name-num {
       width: 28px;
       height: 28px;
@@ -122,25 +116,19 @@
       justify-content: center;
     }
 
-    /* 성도 이름 */
     .name-text {
       font-size: 18px;
       font-weight: 700;
       color: var(--text-main);
-      letter-spacing: -0.3px;
     }
 
-    /* 우측 열기 안내 태그 */
     .action-tag {
       font-size: 13px;
       font-weight: 600;
       color: var(--primary);
-      display: flex;
-      align-items: center;
-      gap: 2px;
     }
 
-    /* 원본 이미지 확대창 (모달) */
+    /* ★ 클릭 시 화면 꽉 차게 커지는 이미지 모달 ★ */
     .modal {
       display: none;
       position: fixed;
@@ -148,7 +136,7 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0, 0, 0, 0.92);
+      background: rgba(0, 0, 0, 0.95);
       z-index: 1000;
       justify-content: center;
       align-items: center;
@@ -158,54 +146,57 @@
 
     .img-wrapper {
       position: relative;
-      width: 100%;
-      max-width: 480px;
+      width: 100vw;
+      height: 88vh;
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
+    /* 이미지 크기 극대화 (화면의 96% 폭 / 88% 높이까지 차오름) */
     .img-wrapper img {
-      width: 100%;
-      max-height: 82vh;
+      max-width: 96vw;
+      max-height: 88vh;
+      width: auto;
+      height: auto;
       object-fit: contain;
       display: block;
-      border-radius: 12px;
+      border-radius: 8px;
+      touch-action: manipulation;
     }
 
-    /* 이미지 위 화살표 버튼 */
     .nav-btn {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      width: 46px;
-      height: 46px;
-      background: rgba(0, 0, 0, 0.6);
+      width: 48px;
+      height: 48px;
+      background: rgba(0, 0, 0, 0.65);
       color: #ffffff;
       border-radius: 50%;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 20px;
+      font-size: 22px;
       cursor: pointer;
       user-select: none;
       z-index: 10;
       backdrop-filter: blur(4px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     }
 
     .nav-btn:active {
-      background: rgba(0, 0, 0, 0.85);
+      background: rgba(0, 0, 0, 0.9);
       transform: translateY(-50%) scale(0.92);
     }
 
-    #prevBtn { left: 12px; }
-    #nextBtn { right: 12px; }
+    #prevBtn { left: 8px; }
+    #nextBtn { right: 8px; }
 
     .close-guide {
-      color: #94a3b8;
+      color: #aaaaaa;
       font-size: 13px;
-      margin-top: 16px;
+      margin-top: 10px;
       font-weight: 500;
     }
   </style>
@@ -213,18 +204,15 @@
 <body>
 
   <div class="app-container">
-    <!-- 헤더 영역 -->
     <div class="header">
-      <span class="header-badge">오늘의 기도 동역자</span>
+      <span class="header-badge">동탄드림교회 고등부</span>
       <h1>🙏 오늘의 달고나</h1>
       <p>오늘 마음 모아 함께 기도할 고등부 가족 5명입니다. <br>이름을 누르면 기도제목을 볼 수 있어요!</p>
     </div>
 
-    <!-- 세련된 이름 전용 목록 -->
     <div class="name-list" id="nameList"></div>
   </div>
 
-  <!-- 이미지 확대 모달 -->
   <div class="modal" id="imageModal">
     <div class="img-wrapper">
       <div class="nav-btn" id="prevBtn">❮</div>
@@ -245,7 +233,7 @@
       ...Array.from({length: 45}, (_, i) => `성도 ${i + 6}`)
     ];
 
-    // 날짜 기반 난수 생성 (하루 동안은 접속자 모두 동일한 결과)
+    // 오늘 날짜 기반 난수 생성 (접속자 모두 동일한 결과)
     const today = new Date();
     const dateSeed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
 
@@ -267,7 +255,6 @@
       [cardNumbers[i], cardNumbers[j]] = [cardNumbers[j], cardNumbers[i]];
     }
 
-    // 오늘 날짜 상위 5개 추출
     const todayCards = cardNumbers.slice(0, SHOW_COUNT);
 
     const container = document.getElementById('nameList');
@@ -276,7 +263,6 @@
     
     let currentModalIndex = 0;
 
-    // 모바일 전용 세련된 이름 카드 생성
     todayCards.forEach((num, index) => {
       const card = document.createElement('div');
       card.className = 'name-card';
@@ -302,27 +288,23 @@
       container.appendChild(card);
     });
 
-    // 모달 이미지 업데이트
     function updateModalImage() {
       const currentCardNum = todayCards[currentModalIndex];
       modalImg.src = `cards/card${currentCardNum}.jpg`;
     }
 
-    // 이전 화살표 (❮)
     document.getElementById('prevBtn').onclick = (e) => {
       e.stopPropagation();
       currentModalIndex = (currentModalIndex - 1 + SHOW_COUNT) % SHOW_COUNT;
       updateModalImage();
     };
 
-    // 다음 화살표 (❯)
     document.getElementById('nextBtn').onclick = (e) => {
       e.stopPropagation();
       currentModalIndex = (currentModalIndex + 1) % SHOW_COUNT;
       updateModalImage();
     };
 
-    // 모달 배경 터치 시 닫기
     modal.onclick = (e) => {
       if (e.target.id !== 'prevBtn' && e.target.id !== 'nextBtn') {
         modal.style.display = 'none';
