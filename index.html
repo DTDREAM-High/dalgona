@@ -2,9 +2,14 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <!-- 모바일 손가락 확대(Pinch Zoom) 허용 -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>오늘의 달고나</title>
+
+  <!-- 파비콘 및 모바일 홈 화면 바로가기 아이콘 설정 -->
+  <link rel="apple-touch-icon" sizes="180x180" href="cards/icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="cards/icon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="cards/icon.png">
+
   <style>
     :root {
       --bg-color: #f8fafc;
@@ -14,19 +19,25 @@
       --text-main: #0f172a;
       --text-sub: #64748b;
       --border-color: #e2e8f0;
+      --accent: #5e8ecb;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", sans-serif;
       background-color: var(--bg-color);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 24px 16px 40px;
+      padding: 20px 16px 40px;
     }
 
     .app-container {
@@ -37,14 +48,12 @@
       gap: 16px;
     }
 
-    /* 헤더 카드는 동일 */
     .header {
-      background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
-      border: 1px solid var(--border-color);
+      background: var(--card-bg);
       border-radius: 20px;
       padding: 24px 20px;
       text-align: center;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
     }
 
     .header-badge {
@@ -55,14 +64,14 @@
       font-weight: 700;
       padding: 4px 12px;
       border-radius: 20px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .header h1 {
       font-size: 22px;
       font-weight: 800;
       color: var(--text-main);
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     .header p {
@@ -70,6 +79,13 @@
       color: var(--text-sub);
       line-height: 1.5;
       word-break: keep-all;
+    }
+
+    .date-display {
+      margin-top: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
     }
 
     .name-list {
@@ -80,21 +96,19 @@
 
     .name-card {
       background: var(--card-bg);
-      border: 1px solid var(--border-color);
       border-radius: 16px;
       padding: 18px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+      transition: transform 0.15s ease, background-color 0.15s ease;
     }
 
     .name-card:active {
       transform: scale(0.98);
       background: var(--primary-light);
-      border-color: var(--primary);
     }
 
     .name-info {
@@ -117,7 +131,7 @@
     }
 
     .name-text {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 700;
       color: var(--text-main);
     }
@@ -128,7 +142,7 @@
       color: var(--primary);
     }
 
-    /* ★ 클릭 시 화면 꽉 차게 커지는 이미지 모달 ★ */
+    /* 이미지 모달 설정 */
     .modal {
       display: none;
       position: fixed;
@@ -136,7 +150,7 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0, 0, 0, 0.95);
+      background: rgba(0, 0, 0, 0.92);
       z-index: 1000;
       justify-content: center;
       align-items: center;
@@ -153,7 +167,6 @@
       align-items: center;
     }
 
-    /* 이미지 크기 극대화 (화면의 96% 폭 / 88% 높이까지 차오름) */
     .img-wrapper img {
       max-width: 96vw;
       max-height: 88vh;
@@ -208,6 +221,7 @@
       <span class="header-badge">동탄드림교회 고등부</span>
       <h1>🙏 오늘의 달고나</h1>
       <p>오늘 마음 모아 함께 기도할 고등부 가족 5명입니다. <br>이름을 누르면 기도제목을 볼 수 있어요!</p>
+      <div class="date-display" id="dateDisplay"></div>
     </div>
 
     <div class="name-list" id="nameList"></div>
@@ -216,29 +230,33 @@
   <div class="modal" id="imageModal">
     <div class="img-wrapper">
       <div class="nav-btn" id="prevBtn">❮</div>
-      <img id="modalImg" src="" alt="기도제목 카드뉴스">
+      <img id="modalImg" src="" alt="기도제목 카드">
       <div class="nav-btn" id="nextBtn">❯</div>
     </div>
     <div class="close-guide">이미지 밖을 터치하면 닫힙니다</div>
   </div>
 
   <script>
-    const TOTAL_CARDS = 39;
+    // 하루에 보여줄 카드 수
     const SHOW_COUNT = 5;
 
-    // ★ 50명의 교인 이름을 순서대로 입력하세요 ★
+    // 교인 이름 목록 (이름을 추가/삭제하면 전체 카드 수와 노출 주기가 자동 계산됩니다)
     const memberNames = [
-      "빈칸(무시)", 
       "이도윤 남고1", "온유겸 남고1", "최예준 남고1", "김유호 남고1", "김유준 남고1", "강한나 여고1", "한유이 여고1", "변찬희 여고1", "김혜린 여고1", "우현서 여고1", "김이음 여고1", "황인애 여고1", 
       "조승현 남고2", "최주영 남고2", "신민성 남고2", "강진모 남고2", "이채림 여고2", "김소희 여고2", "박사랑 여고2", "김하은 여고2", "이소민 여고2", "김하윤 여고2", "손예은 여고2", "박준혁 남고3", 
       "김소명 남고3", "강원모 남고3", "유이안 남고3", "최주아 여고3", "이민서 여고3", "김하진 여고3", "김주연 여고3", "박지훈 목사님", "남억현 선생님 ", "장영배 선생님 ", "조창호 선생님 ", "김나경 선생님 ", 
       "김선종 선생님 ", "박춘영 선생님", "김은미 선생님"
     ];
 
-    // 오늘 날짜 기반 난수 생성 (접속자 모두 동일한 결과)
-    const today = new Date();
-    const dateSeed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+    // 총 카드 수 자동 계산
+    const TOTAL_CARDS = memberNames.length;
 
+    // 오늘 날짜 표시 (예: 2026. 8. 26. 수요일)
+    const today = new Date();
+    const dateOptions = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' };
+    document.getElementById('dateDisplay').textContent = today.toLocaleDateString('ko-KR', dateOptions);
+
+    // 시드 기반 난수 생성기 (Mulberry32)
     function seededRandom(seed) {
       return function() {
         let t = seed += 0x6D2B79F5;
@@ -248,17 +266,40 @@
       };
     }
 
-    const random = seededRandom(dateSeed);
+    // 1970-01-01 기준 오늘 일수 계산 (UTC 기준)
+    const utcDays = Math.floor(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) / (24 * 60 * 60 * 1000));
 
-    // 50개 항목 섞기
-    let cardNumbers = Array.from({length: TOTAL_CARDS}, (_, i) => i + 1);
-    for (let i = cardNumbers.length - 1; i > 0; i--) {
-      const j = Math.floor(random() * (i + 1));
-      [cardNumbers[i], cardNumbers[j]] = [cardNumbers[j], cardNumbers[i]];
+    // 카드 수에 따른 자동 주기 일수 계산 (예: 40장이면 8일, 45장이면 9일)
+    const cycleDays = Math.ceil(TOTAL_CARDS / SHOW_COUNT);
+
+    const cycleIndex = Math.floor(utcDays / cycleDays); // 회차 번호
+    const dayInCycle = utcDays % cycleDays;             // 주기 내 오늘 위치
+
+    // 해당 주기의 무작위 순서배치 생성
+    const cycleRandom = seededRandom(cycleIndex * 99991 + TOTAL_CARDS * 17);
+    let shuffledCards = Array.from({length: TOTAL_CARDS}, (_, i) => i + 1);
+    
+    for (let i = shuffledCards.length - 1; i > 0; i--) {
+      const j = Math.floor(cycleRandom() * (i + 1));
+      [shuffledCards[i], shuffledCards[j]] = [shuffledCards[j], shuffledCards[i]];
     }
 
-    const todayCards = cardNumbers.slice(0, SHOW_COUNT);
+    // 오늘 순서에 맞게 5명 차출
+    const startIndex = dayInCycle * SHOW_COUNT;
+    let todayCards = shuffledCards.slice(startIndex, startIndex + SHOW_COUNT);
 
+    // 마지막 날 부족한 인원은 다음 주기 카드로 보충
+    if (todayCards.length < SHOW_COUNT) {
+      const nextCycleRandom = seededRandom((cycleIndex + 1) * 99991 + TOTAL_CARDS * 17);
+      let nextShuffled = Array.from({length: TOTAL_CARDS}, (_, i) => i + 1);
+      for (let i = nextShuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(nextCycleRandom() * (i + 1));
+        [nextShuffled[i], nextShuffled[j]] = [nextShuffled[j], nextShuffled[i]];
+      }
+      todayCards = todayCards.concat(nextShuffled.slice(0, SHOW_COUNT - todayCards.length));
+    }
+
+    // 리스트 렌더링
     const container = document.getElementById('nameList');
     const modal = document.getElementById('imageModal');
     const modalImg = document.getElementById('modalImg');
@@ -269,7 +310,7 @@
       const card = document.createElement('div');
       card.className = 'name-card';
       
-      const name = memberNames[num] || `기도제목 ${num}`;
+      const name = memberNames[num - 1] || `기도제목 ${num}`;
 
       card.innerHTML = `
         <div class="name-info">
