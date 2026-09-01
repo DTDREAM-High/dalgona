@@ -19,7 +19,6 @@
       --text-main: #0f172a;
       --text-sub: #64748b;
       --border-color: #e2e8f0;
-      --accent: #180ced;
     }
 
     * {
@@ -48,12 +47,29 @@
       gap: 16px;
     }
 
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 4px;
+    }
+
+    .date-display-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
     .header {
       background: var(--card-bg);
       border-radius: 20px;
       padding: 24px 20px;
       text-align: center;
       box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+      border: 1px solid var(--border-color);
     }
 
     .header-badge {
@@ -72,6 +88,10 @@
       font-weight: 800;
       color: var(--text-main);
       margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
     .header p {
@@ -81,11 +101,35 @@
       word-break: keep-all;
     }
 
-    .date-display {
-      margin-top: 12px;
-      font-size: 13px;
+    /* 새로고침 버튼 스타일 */
+    .refresh-btn {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      color: var(--text-sub);
+      font-size: 12px;
       font-weight: 600;
-      color: var(--accent);
+      padding: 6px 12px;
+      border-radius: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+      transition: all 0.2s ease;
+    }
+
+    .refresh-btn:active {
+      transform: scale(0.95);
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .refresh-icon {
+      transition: transform 0.4s ease;
+    }
+
+    .refresh-btn.spin .refresh-icon {
+      transform: rotate(360deg);
     }
 
     .name-list {
@@ -96,19 +140,21 @@
 
     .name-card {
       background: var(--card-bg);
+      border: 1px solid var(--border-color);
       border-radius: 16px;
       padding: 18px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
       transition: transform 0.15s ease, background-color 0.15s ease;
     }
 
     .name-card:active {
       transform: scale(0.98);
       background: var(--primary-light);
+      border-color: var(--primary);
     }
 
     .name-info {
@@ -140,6 +186,9 @@
       font-size: 13px;
       font-weight: 600;
       color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 2px;
     }
 
     /* 이미지 모달 설정 */
@@ -190,7 +239,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 22px;
+      font-size: 20px;
       cursor: pointer;
       user-select: none;
       z-index: 10;
@@ -203,8 +252,8 @@
       transform: translateY(-95%) scale(0.92);
     }
 
-    #prevBtn { left: 8px; }
-    #nextBtn { right: 8px; }
+    #prevBtn { left: 12px; }
+    #nextBtn { right: 12px; }
 
     .close-guide {
       color: #aaaaaa;
@@ -217,11 +266,26 @@
 <body>
 
   <div class="app-container">
+    <div class="header-top">
+      <!-- 오늘 날짜 표시 영역 -->
+      <div class="date-display-wrapper">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        <span id="dateDisplay"></span>
+      </div>
+      <!-- 새로고침 버튼 -->
+      <button class="refresh-btn" id="refreshBtn">
+        <svg class="refresh-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6"></path><path d="M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+        오늘 날짜로 리프레쉬
+      </button>
+    </div>
+
     <div class="header">
       <span class="header-badge">동탄드림교회 고등부</span>
-      <h1>🙏 오늘의 달고나</h1>
+      <h1>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+        오늘의 달고나
+      </h1>
       <p>오늘 마음 모아 함께 기도할 고등부 가족 5명입니다. <br>이름을 누르면 기도제목을 볼 수 있어요!</p>
-      <div class="date-display" id="dateDisplay"></div>
     </div>
 
     <div class="name-list" id="nameList"></div>
@@ -237,45 +301,59 @@
   </div>
 
   <script>
-    // 하루에 보여줄 카드 수
-    const SHOW_COUNT = 5;
+  // 하루에 보여줄 카드 수
+  const SHOW_COUNT = 5;
 
-    // 교인 이름 목록 (이름을 추가/삭제하면 전체 카드 수와 노출 주기가 자동 계산됩니다)
-    const memberNames = [
-      "이도윤 남고1", "온유겸 남고1", "최예준 남고1", "김유호 남고1", "김유준 남고1", "강한나 여고1", "한유이 여고1", "변찬희 여고1", "김혜린 여고1", "우현서 여고1", "김이음 여고1", "황인애 여고1", 
-      "조승현 남고2", "최주영 남고2", "신민성 남고2", "강진모 남고2", "이채림 여고2", "김소희 여고2", "박사랑 여고2", "김하은 여고2", "이소민 여고2", "김하윤 여고2", "손예은 여고2", "박준혁 남고3", 
-      "김소명 남고3", "강원모 남고3", "유이안 남고3", "최주아 여고3", "이민서 여고3", "김하진 여고3", "김주연 여고3", "박지훈 목사님", "남억현 선생님 ", "장영배 선생님 ", "조창호 선생님 ", "김나경 선생님 ", 
-      "김선종 선생님 ", "박춘영 선생님", "김은미 선생님"
-    ];
+  // 교인 이름 목록 (이름을 추가/삭제하면 전체 카드 수와 노출 주기가 자동 계산됩니다)
+  const memberNames = [
+    "이도윤 남고1", "온유겸 남고1", "최예준 남고1", "김유호 남고1", "김유준 남고1", "강한나 여고1", "한유이 여고1", "변찬희 여고1", "김혜린 여고1", "우현서 여고1", "김이음 여고1", "황인애 여고1", 
+    "조승현 남고2", "최주영 남고2", "신민성 남고2", "강진모 남고2", "이채림 여고2", "김소희 여고2", "박사랑 여고2", "김하은 여고2", "이소민 여고2", "김하윤 여고2", "손예은 여고2", "박준혁 남고3", 
+    "김소명 남고3", "강원모 남고3", "유이안 남고3", "최주아 여고3", "이민서 여고3", "김하진 여고3", "김주연 여고3", "박지훈 목사님", "남억현 선생님 ", "장영배 선생님 ", "조창호 선생님 ", "김나경 선생님 ", 
+    "김선종 선생님 ", "박춘영 선생님", "김은미 선생님"
+  ];
 
-    // 총 카드 수 자동 계산
-    const TOTAL_CARDS = memberNames.length;
+  // 총 카드 수 자동 계산
+  const TOTAL_CARDS = memberNames.length;
 
-    // 오늘 날짜 표시 (예: 2026. 8. 26. 수요일)
+  let todayCards = [];
+  let currentLoadedDateStr = "";
+  let currentModalIndex = 0;
+
+  const container = document.getElementById('nameList');
+  const modal = document.getElementById('imageModal');
+  const modalImg = document.getElementById('modalImg');
+
+  // 시드 기반 난수 생성기 (Mulberry32)
+  function seededRandom(seed) {
+    return function() {
+      let t = seed += 0x6D2B79F5;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  // 오늘 날짜 및 카드 렌더링 함수
+  function loadTodayCards() {
     const today = new Date();
-    const dateOptions = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' };
-    document.getElementById('dateDisplay').textContent = today.toLocaleDateString('ko-KR', dateOptions);
+    
+    // 날짜 감지용 문자열
+    currentLoadedDateStr = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
 
-    // 시드 기반 난수 생성기 (Mulberry32)
-    function seededRandom(seed) {
-      return function() {
-        let t = seed += 0x6D2B79F5;
-        t = Math.imul(t ^ (t >>> 15), t | 1);
-        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-      };
+    // 1. 오늘 날짜 표시
+    const dateDisplay = document.getElementById('dateDisplay');
+    if (dateDisplay) {
+      const dateOptions = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' };
+      dateDisplay.textContent = today.toLocaleDateString('ko-KR', dateOptions);
     }
 
-    // 1970-01-01 기준 오늘 일수 계산 (UTC 기준)
+    // 2. 주기 계산 및 카드 섞기 로직
     const utcDays = Math.floor(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) / (24 * 60 * 60 * 1000));
-
-    // 카드 수에 따른 자동 주기 일수 계산 (예: 40장이면 8일, 45장이면 9일)
     const cycleDays = Math.ceil(TOTAL_CARDS / SHOW_COUNT);
 
-    const cycleIndex = Math.floor(utcDays / cycleDays); // 회차 번호
-    const dayInCycle = utcDays % cycleDays;             // 주기 내 오늘 위치
+    const cycleIndex = Math.floor(utcDays / cycleDays); 
+    const dayInCycle = utcDays % cycleDays;             
 
-    // 해당 주기의 무작위 순서배치 생성
     const cycleRandom = seededRandom(cycleIndex * 99991 + TOTAL_CARDS * 17);
     let shuffledCards = Array.from({length: TOTAL_CARDS}, (_, i) => i + 1);
     
@@ -284,11 +362,9 @@
       [shuffledCards[i], shuffledCards[j]] = [shuffledCards[j], shuffledCards[i]];
     }
 
-    // 오늘 순서에 맞게 5명 차출
     const startIndex = dayInCycle * SHOW_COUNT;
-    let todayCards = shuffledCards.slice(startIndex, startIndex + SHOW_COUNT);
+    todayCards = shuffledCards.slice(startIndex, startIndex + SHOW_COUNT);
 
-    // 마지막 날 부족한 인원은 다음 주기 카드로 보충
     if (todayCards.length < SHOW_COUNT) {
       const nextCycleRandom = seededRandom((cycleIndex + 1) * 99991 + TOTAL_CARDS * 17);
       let nextShuffled = Array.from({length: TOTAL_CARDS}, (_, i) => i + 1);
@@ -299,13 +375,8 @@
       todayCards = todayCards.concat(nextShuffled.slice(0, SHOW_COUNT - todayCards.length));
     }
 
-    // 리스트 렌더링
-    const container = document.getElementById('nameList');
-    const modal = document.getElementById('imageModal');
-    const modalImg = document.getElementById('modalImg');
-    
-    let currentModalIndex = 0;
-
+    // 3. 리스트 렌더링
+    container.innerHTML = '';
     todayCards.forEach((num, index) => {
       const card = document.createElement('div');
       card.className = 'name-card';
@@ -318,7 +389,8 @@
           <div class="name-text">${name}</div>
         </div>
         <div class="action-tag">
-          기도제목 보기 ➔
+          기도제목 보기
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
         </div>
       `;
 
@@ -330,29 +402,58 @@
 
       container.appendChild(card);
     });
+  }
 
-    function updateModalImage() {
-      const currentCardNum = todayCards[currentModalIndex];
-      modalImg.src = `cards/card${currentCardNum}.jpg`;
-    }
+  function updateModalImage() {
+    const currentCardNum = todayCards[currentModalIndex];
+    modalImg.src = `cards/card${currentCardNum}.jpg`;
+  }
 
-    document.getElementById('prevBtn').onclick = (e) => {
-      e.stopPropagation();
-      currentModalIndex = (currentModalIndex - 1 + SHOW_COUNT) % SHOW_COUNT;
-      updateModalImage();
-    };
+  // 초기 로딩
+  loadTodayCards();
 
-    document.getElementById('nextBtn').onclick = (e) => {
-      e.stopPropagation();
-      currentModalIndex = (currentModalIndex + 1) % SHOW_COUNT;
-      updateModalImage();
-    };
-
-    modal.onclick = (e) => {
-      if (e.target.id !== 'prevBtn' && e.target.id !== 'nextBtn') {
-        modal.style.display = 'none';
+  // 화면을 다시 켰을 때(앱 복귀 시) 자동 새로고침
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      const now = new Date();
+      const checkDateStr = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+      
+      if (checkDateStr !== currentLoadedDateStr) {
+        loadTodayCards();
       }
+    }
+  });
+
+  // 새로고침 버튼 애니메이션 및 클릭 이벤트
+  const refreshBtn = document.getElementById('refreshBtn');
+  if (refreshBtn) {
+    refreshBtn.onclick = () => {
+      refreshBtn.classList.add('spin');
+      loadTodayCards();
+      setTimeout(() => {
+        refreshBtn.classList.remove('spin');
+      }, 400);
     };
+  }
+
+  // 모달 제어 이벤트
+  document.getElementById('prevBtn').onclick = (e) => {
+    e.stopPropagation();
+    currentModalIndex = (currentModalIndex - 1 + SHOW_COUNT) % SHOW_COUNT;
+    updateModalImage();
+  };
+
+  document.getElementById('nextBtn').onclick = (e) => {
+    e.stopPropagation();
+    currentModalIndex = (currentModalIndex + 1) % SHOW_COUNT;
+    updateModalImage();
+  };
+
+  modal.onclick = (e) => {
+    if (e.target.id !== 'prevBtn' && e.target.id !== 'nextBtn') {
+      modal.style.display = 'none';
+    }
+  };
   </script>
 </body>
 </html>
