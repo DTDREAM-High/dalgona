@@ -3,8 +3,8 @@
   "short_name": "오늘의달고나",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f8fafc",
-  "theme_color": "#4f46e5",
+  "background_color": "#fcfaf8",
+  "theme_color": "#e06d53",
   "icons": [
     {
       "src": "cards/icon-app.png",
