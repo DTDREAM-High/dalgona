@@ -3,25 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#fcfaf8">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <title>오늘의 달고나</title>
 
-  <!-- 파비콘 및 모바일 홈 화면 바로가기 아이콘 설정 -->
   <link rel="apple-touch-icon" sizes="180x180" href="cards/icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="cards/icon.png">
   <link rel="icon" type="image/png" sizes="16x16" href="cards/icon.png">
   <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#fcfaf8">
+
+  <!-- 📸 카드 캡처 저장을 위한 html2canvas 라이브러리 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
   <style>
     :root {
-    --bg-color: #fcfaf8;         
-    --card-bg: #ffffff;
-    --primary: #e06d53;          
-     --primary-light: #fdf2ef;    
-     --text-main: #221c1a;        
-      --text-sub: #786f6c;         
-      --border-color: #f0e8e4;     
-}
+      --bg-color: #fcfaf8;
+      --card-bg: #ffffff;
+      --primary: #e06d53;
+      --primary-light: #fdf2ef;
+      --text-main: #221c1a;
+      --text-sub: #786f6c;
+      --border-color: #f0e8e4;
+      --tree-green: #34d399;
+      --tree-green-dark: #059669;
+    }
 
     * {
       box-sizing: border-box;
@@ -61,7 +65,7 @@
       align-items: center;
       gap: 6px;
       color: var(--primary);
-      font-size: 13px;
+      font-size: 13.5px;
       font-weight: 700;
     }
 
@@ -70,7 +74,7 @@
       border-radius: 20px;
       padding: 24px 20px;
       text-align: center;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 4px 16px rgba(224, 109, 83, 0.05);
       border: 1px solid var(--border-color);
     }
 
@@ -80,7 +84,7 @@
       color: var(--primary);
       font-size: 12px;
       font-weight: 700;
-      padding: 4px 12px;
+      padding: 5px 14px;
       border-radius: 20px;
       margin-bottom: 12px;
     }
@@ -103,7 +107,6 @@
       word-break: keep-all;
     }
 
-    /* 새로고침 버튼 스타일 */
     .refresh-btn {
       background: #ffffff;
       border: 1px solid var(--border-color);
@@ -116,7 +119,7 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
       transition: all 0.2s ease;
     }
 
@@ -124,6 +127,7 @@
       transform: scale(0.95);
       background: var(--primary-light);
       color: var(--primary);
+      border-color: var(--primary);
     }
 
     .refresh-icon {
@@ -150,7 +154,7 @@
       justify-content: space-between;
       cursor: pointer;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-      transition: transform 0.15s ease, background-color 0.15s ease;
+      transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
     }
 
     .name-card:active {
@@ -193,14 +197,129 @@
       gap: 2px;
     }
 
-    /* 이미지 모달 설정 */
+    .pray-complete-wrapper {
+      margin-top: 4px;
+    }
+
+    .complete-btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(224, 109, 83, 0.25);
+      transition: all 0.2s ease;
+    }
+
+    .complete-btn:active {
+      transform: scale(0.98);
+    }
+
+    .complete-btn.done {
+      background: #10b981;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    }
+
+    /* 🪴 하단 배치된 기도 나무 카드 */
+    .tree-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 16px 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .tree-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .tree-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tree-stage-badge {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--tree-green-dark);
+      background: #ecfdf5;
+      padding: 3px 10px;
+      border-radius: 12px;
+    }
+
+    .tree-visual-container {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .tree-icon-box {
+      width: 60px;
+      height: 60px;
+      background: var(--primary-light);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      flex-shrink: 0;
+      transition: transform 0.3s ease;
+    }
+
+    .tree-info-box {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 10px;
+      background: #f1f5f9;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #34d399, #10b981);
+      width: 0%;
+      border-radius: 10px;
+      transition: width 0.5s ease;
+    }
+
+    .tree-exp-text {
+      font-size: 12px;
+      color: var(--text-sub);
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* 기도제목 카드 모달 */
     .modal {
       display: none;
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
       background: rgba(0, 0, 0, 0.92);
       z-index: 1000;
       justify-content: center;
@@ -211,41 +330,26 @@
 
     .img-wrapper {
       position: relative;
-      width: 100vw;
-      height: 88vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      width: 100vw; height: 88vh;
+      display: flex; justify-content: center; align-items: center;
     }
 
     .img-wrapper img {
-      max-width: 96vw;
-      max-height: 88vh;
-      width: auto;
-      height: auto;
-      object-fit: contain;
-      display: block;
-      border-radius: 8px;
-      touch-action: manipulation;
+      max-width: 96vw; max-height: 88vh;
+      width: auto; height: auto;
+      object-fit: contain; display: block;
+      border-radius: 8px; touch-action: manipulation;
     }
 
     .nav-btn {
-      position: absolute;
-      top: 95%;
+      position: absolute; top: 95%;
       transform: translateY(-95%);
-      width: 48px;
-      height: 48px;
+      width: 48px; height: 48px;
       background: rgba(0, 0, 0, 0.65);
-      color: #ffffff;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 20px;
-      cursor: pointer;
-      user-select: none;
-      z-index: 10;
-      backdrop-filter: blur(4px);
+      color: #ffffff; border-radius: 50%;
+      display: flex; justify-content: center; align-items: center;
+      font-size: 20px; cursor: pointer; user-select: none;
+      z-index: 10; backdrop-filter: blur(4px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     }
 
@@ -258,10 +362,113 @@
     #nextBtn { right: 12px; }
 
     .close-guide {
-      color: #aaaaaa;
+      color: #aaaaaa; font-size: 13px; margin-top: 10px; font-weight: 500;
+    }
+
+    /* 🏆 만개 축하 & 캡처 모달 디자인 */
+    .completion-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1001;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      backdrop-filter: blur(6px);
+    }
+
+    .completion-card-wrapper {
+      background: #ffffff;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 360px;
+      padding: 24px 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      text-align: center;
+    }
+
+    #captureArea {
+      background: linear-gradient(135deg, #fdf2ef 0%, #fcfaf8 100%);
+      border: 2px solid #f0e8e4;
+      border-radius: 20px;
+      padding: 24px 16px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .capture-badge {
+      background: var(--primary);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 12px;
+    }
+
+    .capture-tree-icon {
+      font-size: 64px;
+      margin: 8px 0;
+    }
+
+    .capture-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .capture-desc {
       font-size: 13px;
-      margin-top: 10px;
-      font-weight: 500;
+      color: var(--text-sub);
+      line-height: 1.4;
+      word-break: keep-all;
+    }
+
+    .capture-date {
+      font-size: 11px;
+      color: var(--primary);
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    .modal-btn-group {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .modal-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .capture-btn {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(224, 109, 83, 0.25);
+    }
+
+    .reset-btn {
+      background: #f1f5f9;
+      color: var(--text-sub);
     }
   </style>
 </head>
@@ -269,30 +476,61 @@
 
   <div class="app-container">
     <div class="header-top">
-      <!-- 오늘 날짜 표시 영역 -->
       <div class="date-display-wrapper">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
         <span id="dateDisplay"></span>
       </div>
-      <!-- 새로고침 버튼 -->
       <button class="refresh-btn" id="refreshBtn">
         <svg class="refresh-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6"></path><path d="M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
-        오늘 날짜로 리프레쉬
+        오늘 날짜로 갱신
       </button>
     </div>
-
+ 
+    <!-- 메인 타이틀 영역 -->
     <div class="header">
       <span class="header-badge">동탄드림교회 고등부</span>
       <h1>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
         오늘의 달고나
+       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+
       </h1>
       <p>오늘 마음 모아 함께 기도할 고등부 가족 5명입니다. <br>이름을 누르면 기도제목을 볼 수 있어요!</p>
     </div>
 
+    <!-- 오늘 기도할 5명 카드 목록 -->
     <div class="name-list" id="nameList"></div>
+
+    <!-- 🪴 나의 기도 나무 카드 (하단배치) -->
+    <div class="tree-card">
+      <div class="tree-header">
+        <span class="tree-title">🪴 나의 기도 나무</span>
+        <span class="tree-stage-badge" id="treeStageName">씨앗 단계</span>
+      </div>
+      <div class="tree-visual-container">
+        <div class="tree-icon-box" id="treeIcon">🫘</div>
+        <div class="tree-info-box">
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="treeProgress"></div>
+          </div>
+          <div class="tree-exp-text">
+            <span id="treeExpStatus">성장률 0%</span>
+            <span>목표 100%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+   
+    <!-- 🙏 기도 완료 (물주기) 버튼 -->
+    <div class="pray-complete-wrapper">
+      <button class="complete-btn" id="completeBtn">
+        💧 오늘 기도하고 나무에 물주기 (+5%)
+      </button>
+    </div>
   </div>
 
+  <!-- 기도제목 카드 모달 -->
   <div class="modal" id="imageModal">
     <div class="img-wrapper">
       <div class="nav-btn" id="prevBtn">❮</div>
@@ -302,11 +540,37 @@
     <div class="close-guide">이미지 밖을 터치하면 닫힙니다</div>
   </div>
 
+  <!-- 🏆 100% 만개 축하 & 캡처 모달 -->
+  <div class="completion-modal" id="completionModal">
+    <div class="completion-card-wrapper">
+      
+      <!-- 📸 캡처 대상 영역 -->
+      <div id="captureArea">
+        <span class="capture-badge">동탄드림교회 고등부</span>
+        <div class="capture-tree-icon">🌳</div>
+        <div class="capture-title">기도의 나무 만개! 🎉</div>
+        <div class="capture-desc">
+          꾸준한 기도와 마음을 모아<br>풍성한 기도 나무를 완성했습니다!
+        </div>
+        <div class="capture-date" id="captureDate"></div>
+      </div>
+
+      <!-- 모달 버튼 -->
+      <div class="modal-btn-group">
+        <button class="modal-btn capture-btn" id="downloadBtn">
+          📸 이미지로 저장하기
+        </button>
+        <button class="modal-btn reset-btn" id="resetTreeBtn">
+          🌱 새로운 씨앗부터 다시 키우기
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <script>
-  // 하루에 보여줄 카드 수
   const SHOW_COUNT = 5;
 
-  // 교인 이름 목록 (이름을 추가/삭제하면 전체 카드 수와 노출 주기가 자동 계산됩니다)
   const memberNames = [
     "이도윤 남고1", "온유겸 남고1", "최예준 남고1", "김유호 남고1", "김유준 남고1", "강한나 여고1", "한유이 여고1", "변찬희 여고1", "김혜린 여고1", "우현서 여고1", "김이음 여고1", "황인애 여고1", 
     "조승현 남고2", "최주영 남고2", "신민성 남고2", "강진모 남고2", "이채림 여고2", "김소희 여고2", "박사랑 여고2", "김하은 여고2", "이소민 여고2", "김하윤 여고2", "손예은 여고2", "박준혁 남고3", 
@@ -314,9 +578,7 @@
     "김선종 선생님 ", "박춘영 선생님", "김은미 선생님"
   ];
 
-  // 총 카드 수 자동 계산
   const TOTAL_CARDS = memberNames.length;
-
   let todayCards = [];
   let currentLoadedDateStr = "";
   let currentModalIndex = 0;
@@ -324,8 +586,9 @@
   const container = document.getElementById('nameList');
   const modal = document.getElementById('imageModal');
   const modalImg = document.getElementById('modalImg');
+  const completeBtn = document.getElementById('completeBtn');
+  const completionModal = document.getElementById('completionModal');
 
-  // 시드 기반 난수 생성기 (Mulberry32)
   function seededRandom(seed) {
     return function() {
       let t = seed += 0x6D2B79F5;
@@ -335,21 +598,16 @@
     };
   }
 
-  // 오늘 날짜 및 카드 렌더링 함수
   function loadTodayCards() {
     const today = new Date();
-    
-    // 날짜 감지용 문자열
     currentLoadedDateStr = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
 
-    // 1. 오늘 날짜 표시
     const dateDisplay = document.getElementById('dateDisplay');
     if (dateDisplay) {
       const dateOptions = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' };
       dateDisplay.textContent = today.toLocaleDateString('ko-KR', dateOptions);
     }
 
-    // 2. 주기 계산 및 카드 섞기 로직
     const utcDays = Math.floor(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) / (24 * 60 * 60 * 1000));
     const cycleDays = Math.ceil(TOTAL_CARDS / SHOW_COUNT);
 
@@ -377,12 +635,10 @@
       todayCards = todayCards.concat(nextShuffled.slice(0, SHOW_COUNT - todayCards.length));
     }
 
-    // 3. 리스트 렌더링
     container.innerHTML = '';
     todayCards.forEach((num, index) => {
       const card = document.createElement('div');
       card.className = 'name-card';
-      
       const name = memberNames[num - 1] || `기도제목 ${num}`;
 
       card.innerHTML = `
@@ -404,6 +660,8 @@
 
       container.appendChild(card);
     });
+
+    updateTreeUI();
   }
 
   function updateModalImage() {
@@ -411,22 +669,137 @@
     modalImg.src = `cards/card${currentCardNum}.jpg`;
   }
 
-  // 초기 로딩
+  // ----------------------------------------------------
+  // 🪴 기도 나무 로직 & 5% 성장률
+  // ----------------------------------------------------
+  const TREE_STAGES = [
+    { minExp: 0,   icon: "🫘", name: "씨앗 단계" },
+    { minExp: 20,  icon: "🌱", name: "새싹 단계" },
+    { minExp: 45,  icon: "🌿", name: "줄기 단계" },
+    { minExp: 70,  icon: "🌷", name: "꽃봉오리 단계" },
+    { minExp: 100, icon: "🌳", name: "풍성한 나무" }
+  ];
+
+  function getTreeData() {
+    const saved = localStorage.getItem('dalgona_tree_data');
+    return saved ? JSON.parse(saved) : { lastDate: '', exp: 0 };
+  }
+
+  function updateTreeUI() {
+    const data = getTreeData();
+    const exp = data.exp;
+
+    let stage = TREE_STAGES[0];
+    for (let i = TREE_STAGES.length - 1; i >= 0; i--) {
+      if (exp >= TREE_STAGES[i].minExp) {
+        stage = TREE_STAGES[i];
+        break;
+      }
+    }
+
+    document.getElementById('treeIcon').textContent = stage.icon;
+    document.getElementById('treeStageName').textContent = stage.name;
+    document.getElementById('treeProgress').style.width = `${exp}%`;
+    document.getElementById('treeExpStatus').textContent = `성장률 ${exp}%`;
+
+    const isTodayDone = data.lastDate === currentLoadedDateStr;
+
+    if (exp >= 100) {
+      completeBtn.classList.add('done');
+      completeBtn.innerHTML = `🏆 기도의 나무 완성! (결과 카드 보기)`;
+    } else if (isTodayDone) {
+      completeBtn.classList.add('done');
+      completeBtn.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        오늘 기도를 완료하고 물을 주었습니다!
+      `;
+    } else {
+      completeBtn.classList.remove('done');
+      completeBtn.innerHTML = `💧 오늘 기도하고 나무에 물주기 (+5%)`;
+    }
+  }
+
+  // 통합 버튼 클릭 핸들러
+  completeBtn.onclick = () => {
+    let data = getTreeData();
+
+    // 100% 완료 상태라면 모달 오픈
+    if (data.exp >= 100) {
+      showCompletionModal();
+      return;
+    }
+
+    // 오늘 이미 물을 준 경우 (테스트 완료 후 중복 클릭 안내)
+    if (data.lastDate === currentLoadedDateStr) {
+      alert("오늘 이미 나무에 물을 주었습니다! 내일 다시 함께 기도해 주세요. 🌿");
+     return;
+    }
+
+    // 물주기 실행 (+10% 상승)
+    data.exp += 10;
+    data.lastDate = currentLoadedDateStr;
+
+    if (data.exp >= 100) {
+      data.exp = 100;
+    }
+
+    localStorage.setItem('dalgona_tree_data', JSON.stringify(data));
+    updateTreeUI();
+
+    // 이모지 줌 효과
+    const treeIcon = document.getElementById('treeIcon');
+    treeIcon.style.transform = 'scale(1.3)';
+    setTimeout(() => treeIcon.style.transform = 'scale(1)', 300);
+
+    if (data.exp >= 100) {
+      showCompletionModal();
+    } else {
+      alert(`💧 나무에 물을 주었습니다!\n나무 성장률 +10% (현재 ${data.exp}%)`);
+    }
+  };
+
+  function showCompletionModal() {
+    const today = new Date();
+    document.getElementById('captureDate').textContent = `달성일: ${today.getFullYear()}.${today.getMonth()+1}.${today.getDate()}`;
+    completionModal.style.display = 'flex';
+  }
+
+  // 📸 이미지 다운로드
+  document.getElementById('downloadBtn').onclick = () => {
+    const captureArea = document.getElementById('captureArea');
+    html2canvas(captureArea, { scale: 2 }).then(canvas => {
+      const link = document.createElement('a');
+      link.download = `기도나무_완성_카드.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  };
+
+  // 🌱 새로운 나무 리셋
+  document.getElementById('resetTreeBtn').onclick = () => {
+    if (confirm("새로운 기도 나무를 씨앗부터 다시 키우시겠습니까?")) {
+      let data = getTreeData();
+      data.exp = 0;
+      data.lastDate = ''; // 리셋 시 물주기도 다시 가능하도록 처리
+      localStorage.setItem('dalgona_tree_data', JSON.stringify(data));
+      completionModal.style.display = 'none';
+      updateTreeUI();
+    }
+  };
+
+  // 초기 실행
   loadTodayCards();
 
-  // 화면을 다시 켰을 때(앱 복귀 시) 자동 새로고침
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
       const now = new Date();
       const checkDateStr = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
-      
       if (checkDateStr !== currentLoadedDateStr) {
         loadTodayCards();
       }
     }
   });
 
-  // 새로고침 버튼 애니메이션 및 클릭 이벤트
   const refreshBtn = document.getElementById('refreshBtn');
   if (refreshBtn) {
     refreshBtn.onclick = () => {
@@ -438,7 +811,6 @@
     };
   }
 
-  // 모달 제어 이벤트
   document.getElementById('prevBtn').onclick = (e) => {
     e.stopPropagation();
     currentModalIndex = (currentModalIndex - 1 + SHOW_COUNT) % SHOW_COUNT;
