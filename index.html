@@ -23,8 +23,8 @@
       --text-main: #221c1a;
       --text-sub: #786f6c;
       --border-color: #f0e8e4;
-      --tree-green: #34d399;
-      --tree-green-dark: #059669;
+      --tree-green: #10b981;
+      --tree-green-light: #ecfdf5;
     }
 
     * {
@@ -197,25 +197,23 @@
       gap: 2px;
     }
 
-    .pray-complete-wrapper {
-      margin-top: 4px;
-    }
-
+    /* 🪴 기도 나무 카드 내부 버튼 디자인 */
     .complete-btn {
       width: 100%;
-      padding: 16px;
+      padding: 15px;
+      margin-top: 4px;
       background: var(--primary);
       color: #ffffff;
       border: none;
       border-radius: 16px;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      box-shadow: 0 4px 12px rgba(224, 109, 83, 0.25);
+      box-shadow: 0 4px 14px rgba(224, 109, 83, 0.25);
       transition: all 0.2s ease;
     }
 
@@ -225,19 +223,31 @@
 
     .complete-btn.done {
       background: #10b981;
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.2);
     }
 
-    /* 🪴 하단 배치된 기도 나무 카드 */
+    /* 🪴 하단 기도 나무 카드 */
     .tree-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 20px;
-      padding: 16px 20px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      background: linear-gradient(145deg, #ffffff 0%, #f7faf7 100%);
+      border: 1.5px solid #d1fae5;
+      border-radius: 22px;
+      padding: 20px 22px;
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.08);
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tree-card::before {
+      content: '';
+      position: absolute;
+      top: -20px; right: -20px;
+      width: 80px; height: 80px;
+      background: rgba(52, 211, 153, 0.1);
+      border-radius: 50%;
+      pointer-events: none;
     }
 
     .tree-header {
@@ -247,9 +257,9 @@
     }
 
     .tree-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-main);
+      font-size: 15px;
+      font-weight: 800;
+      color: #065f46;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -257,11 +267,12 @@
 
     .tree-stage-badge {
       font-size: 12px;
-      font-weight: 700;
-      color: var(--tree-green-dark);
-      background: #ecfdf5;
-      padding: 3px 10px;
-      border-radius: 12px;
+      font-weight: 800;
+      color: #047857;
+      background: #d1fae5;
+      padding: 4px 12px;
+      border-radius: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
     }
 
     .tree-visual-container {
@@ -271,48 +282,121 @@
     }
 
     .tree-icon-box {
-      width: 60px;
-      height: 60px;
-      background: var(--primary-light);
-      border-radius: 16px;
+      width: 64px;
+      height: 64px;
+      background: #ffffff;
+      border: 1px solid #a7f3d0;
+      border-radius: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 32px;
+      font-size: 34px;
       flex-shrink: 0;
-      transition: transform 0.3s ease;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.12);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     .tree-info-box {
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
     }
 
     .progress-bar-bg {
       width: 100%;
-      height: 10px;
-      background: #f1f5f9;
+      height: 12px;
+      background: #e2e8f0;
       border-radius: 10px;
       overflow: hidden;
+      padding: 2px;
     }
 
     .progress-bar-fill {
       height: 100%;
-      background: linear-gradient(90deg, #34d399, #10b981);
+      background: linear-gradient(90deg, #34d399, #059669);
       width: 0%;
       border-radius: 10px;
-      transition: width 0.5s ease;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
     }
 
     .tree-exp-text {
-      font-size: 12px;
-      color: var(--text-sub);
-      font-weight: 600;
+      font-size: 12.5px;
+      color: #047857;
+      font-weight: 700;
       display: flex;
       justify-content: space-between;
     }
+
+    /* 💬 커스텀 토스트 알림 모달 */
+    .custom-alert-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(3px);
+      animation: fadeIn 0.2s ease;
+    }
+
+    .custom-alert-box {
+      background: #ffffff;
+      width: 85%;
+      max-width: 320px;
+      border-radius: 20px;
+      padding: 24px 20px 20px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      animation: popUp 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .alert-icon-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--tree-green-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+    }
+
+    .alert-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .alert-desc {
+      font-size: 13.5px;
+      color: var(--text-sub);
+      line-height: 1.4;
+      word-break: keep-all;
+    }
+
+    .alert-confirm-btn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 4px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 14.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes popUp { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
     /* 기도제목 카드 모달 */
     .modal {
@@ -485,15 +569,13 @@
         오늘 날짜로 갱신
       </button>
     </div>
- 
+
     <!-- 메인 타이틀 영역 -->
     <div class="header">
       <span class="header-badge">동탄드림교회 고등부</span>
       <h1>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
         오늘의 달고나
-       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
-
       </h1>
       <p>오늘 마음 모아 함께 기도할 고등부 가족 5명입니다. <br>이름을 누르면 기도제목을 볼 수 있어요!</p>
     </div>
@@ -501,7 +583,7 @@
     <!-- 오늘 기도할 5명 카드 목록 -->
     <div class="name-list" id="nameList"></div>
 
-    <!-- 🪴 나의 기도 나무 카드 (하단배치) -->
+    <!-- 🪴 나의 기도 나무 카드 (물주기 버튼 포함) -->
     <div class="tree-card">
       <div class="tree-header">
         <span class="tree-title">🪴 나의 기도 나무</span>
@@ -519,14 +601,21 @@
           </div>
         </div>
       </div>
-    </div>
-
-   
-    <!-- 🙏 기도 완료 (물주기) 버튼 -->
-    <div class="pray-complete-wrapper">
+      
+      <!-- 🙏 물주기 버튼이 나무 프레임 안으로 이동됨 -->
       <button class="complete-btn" id="completeBtn">
         💧 오늘 기도하고 나무에 물주기 (+10%)
       </button>
+    </div>
+  </div>
+
+  <!-- 💬 커스텀 알림 팝업 모달 -->
+  <div class="custom-alert-modal" id="customAlertModal">
+    <div class="custom-alert-box">
+      <div class="alert-icon-circle" id="alertIcon">💧</div>
+      <div class="alert-title" id="alertTitle">나무에 물을 주었습니다!</div>
+      <div class="alert-desc" id="alertDesc">오늘도 기도의 마음을 잘 모았어요.</div>
+      <button class="alert-confirm-btn" id="alertConfirmBtn">확인</button>
     </div>
   </div>
 
@@ -544,7 +633,6 @@
   <div class="completion-modal" id="completionModal">
     <div class="completion-card-wrapper">
       
-      <!-- 📸 캡처 대상 영역 -->
       <div id="captureArea">
         <span class="capture-badge">동탄드림교회 고등부</span>
         <div class="capture-tree-icon">🌳</div>
@@ -555,7 +643,6 @@
         <div class="capture-date" id="captureDate"></div>
       </div>
 
-      <!-- 모달 버튼 -->
       <div class="modal-btn-group">
         <button class="modal-btn capture-btn" id="downloadBtn">
           📸 이미지로 저장하기
@@ -588,6 +675,24 @@
   const modalImg = document.getElementById('modalImg');
   const completeBtn = document.getElementById('completeBtn');
   const completionModal = document.getElementById('completionModal');
+
+  // 커스텀 알림 팝업 제어
+  const customAlertModal = document.getElementById('customAlertModal');
+  const alertIcon = document.getElementById('alertIcon');
+  const alertTitle = document.getElementById('alertTitle');
+  const alertDesc = document.getElementById('alertDesc');
+  const alertConfirmBtn = document.getElementById('alertConfirmBtn');
+
+  function showAlert(icon, title, desc) {
+    alertIcon.textContent = icon;
+    alertTitle.textContent = title;
+    alertDesc.textContent = desc;
+    customAlertModal.style.display = 'flex';
+  }
+
+  alertConfirmBtn.onclick = () => {
+    customAlertModal.style.display = 'none';
+  };
 
   function seededRandom(seed) {
     return function() {
@@ -670,7 +775,7 @@
   }
 
   // ----------------------------------------------------
-  // 🪴 기도 나무 로직 & 10% 성장률
+  // 🪴 기도 나무 로직
   // ----------------------------------------------------
   const TREE_STAGES = [
     { minExp: 0,   icon: "🫘", name: "씨앗 단계" },
@@ -719,20 +824,20 @@
     }
   }
 
-  // 통합 버튼 클릭 핸들러
+  // 버튼 클릭 핸들러
   completeBtn.onclick = () => {
     let data = getTreeData();
 
-    // 100% 완료 상태라면 모달 오픈
+    // 100% 완료 상태라면 만개 모달 오픈
     if (data.exp >= 100) {
       showCompletionModal();
       return;
     }
 
-    // 오늘 이미 물을 준 경우 (테스트 완료 후 중복 클릭 안내)
+    // 🔴 [테스트 시 주석 처리 영역] 중복 물주기 제한
     if (data.lastDate === currentLoadedDateStr) {
-      alert("오늘 이미 나무에 물을 주었습니다! 내일 다시 함께 기도해 주세요. 🌿");
-     return;
+      showAlert("🌿", "오늘 물주기 완료!", "오늘 기도를 모두 마쳤습니다.\n내일 다시 새로운 물을 나눠주세요!");
+      return;
     }
 
     // 물주기 실행 (+10% 상승)
@@ -746,15 +851,15 @@
     localStorage.setItem('dalgona_tree_data', JSON.stringify(data));
     updateTreeUI();
 
-    // 이모지 줌 효과
+    // 이모지 바운스 효과
     const treeIcon = document.getElementById('treeIcon');
-    treeIcon.style.transform = 'scale(1.3)';
-    setTimeout(() => treeIcon.style.transform = 'scale(1)', 300);
+    treeIcon.style.transform = 'scale(1.25) rotate(-5deg)';
+    setTimeout(() => treeIcon.style.transform = 'scale(1) rotate(0deg)', 300);
 
     if (data.exp >= 100) {
       showCompletionModal();
     } else {
-      alert(`💧 나무에 물을 주었습니다!\n나무 성장률 +10% (현재 ${data.exp}%)`);
+      showAlert("💧", "나무가 쑥쑥 자라는 중!", `오늘 기도 물을 주어 성장률이 +10% 올랐습니다. (현재 ${data.exp}%)`);
     }
   };
 
@@ -780,7 +885,7 @@
     if (confirm("새로운 기도 나무를 씨앗부터 다시 키우시겠습니까?")) {
       let data = getTreeData();
       data.exp = 0;
-      data.lastDate = ''; // 리셋 시 물주기도 다시 가능하도록 처리
+      data.lastDate = '';
       localStorage.setItem('dalgona_tree_data', JSON.stringify(data));
       completionModal.style.display = 'none';
       updateTreeUI();
