@@ -659,10 +659,8 @@
   const SHOW_COUNT = 5;
 
   const memberNames = [
-    "이도윤 남고1", "온유겸 남고1", "최예준 남고1", "김유호 남고1", "김유준 남고1", "강한나 여고1", "한유이 여고1", "변찬희 여고1", "김혜린 여고1", "우현서 여고1", "김이음 여고1", "황인애 여고1", 
-    "조승현 남고2", "최주영 남고2", "신민성 남고2", "강진모 남고2", "이채림 여고2", "김소희 여고2", "박사랑 여고2", "김하은 여고2", "이소민 여고2", "김하윤 여고2", "손예은 여고2", "박준혁 남고3", 
-    "김소명 남고3", "강원모 남고3", "유이안 남고3", "최주아 여고3", "이민서 여고3", "김하진 여고3", "김주연 여고3", "박지훈 목사님", "남억현 선생님 ", "장영배 선생님 ", "조창호 선생님 ", "김나경 선생님 ", 
-    "김선종 선생님 ", "박춘영 선생님", "김은미 선생님"
+    "최예준 남고1", "이도윤 남고1", "김유준 남고1", "온유겸 남고1", "강한나 여고1-1", "김혜린 여고1-1", "한유이 여고1-1", "변찬희 여고1-1", "우현서 여고1-1", "김예린 여고2-1", "박사랑 여고2-1", 
+    "이채림 여고2-1", "이정윤 남고3-1", "이현욱 남고3-1", "정시우 남고3-1", "김주연 여고3", "최주아 여고3", "이민서 여고3",  "임미선 선생님", "김은미 선생님"
   ];
 
   const TOTAL_CARDS = memberNames.length;
@@ -703,71 +701,70 @@
     };
   }
 
-  function loadTodayCards() {
-    const today = new Date();
-    currentLoadedDateStr = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+ function loadTodayCards() {
+  const today = new Date();
+  currentLoadedDateStr = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
 
-    const dateDisplay = document.getElementById('dateDisplay');
-    if (dateDisplay) {
-      const dateOptions = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' };
-      dateDisplay.textContent = today.toLocaleDateString('ko-KR', dateOptions);
-    }
-
-    const utcDays = Math.floor(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) / (24 * 60 * 60 * 1000));
-    const cycleDays = Math.ceil(TOTAL_CARDS / SHOW_COUNT);
-
-    const cycleIndex = Math.floor(utcDays / cycleDays); 
-    const dayInCycle = utcDays % cycleDays;             
-
-    const cycleRandom = seededRandom(cycleIndex * 99991 + TOTAL_CARDS * 17);
-    let shuffledCards = Array.from({length: TOTAL_CARDS}, (_, i) => i + 1);
-    
-    for (let i = shuffledCards.length - 1; i > 0; i--) {
-      const j = Math.floor(cycleRandom() * (i + 1));
-      [shuffledCards[i], shuffledCards[j]] = [shuffledCards[j], shuffledCards[i]];
-    }
-
-    const startIndex = dayInCycle * SHOW_COUNT;
-    todayCards = shuffledCards.slice(startIndex, startIndex + SHOW_COUNT);
-
-    if (todayCards.length < SHOW_COUNT) {
-      const nextCycleRandom = seededRandom((cycleIndex + 1) * 99991 + TOTAL_CARDS * 17);
-      let nextShuffled = Array.from({length: TOTAL_CARDS}, (_, i) => i + 1);
-      for (let i = nextShuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(nextCycleRandom() * (i + 1));
-        [nextShuffled[i], nextShuffled[j]] = [nextShuffled[j], nextShuffled[i]];
-      }
-      todayCards = todayCards.concat(nextShuffled.slice(0, SHOW_COUNT - todayCards.length));
-    }
-
-    container.innerHTML = '';
-    todayCards.forEach((num, index) => {
-      const card = document.createElement('div');
-      card.className = 'name-card';
-      const name = memberNames[num - 1] || `기도제목 ${num}`;
-
-      card.innerHTML = `
-        <div class="name-info">
-          <div class="name-num">${index + 1}</div>
-          <div class="name-text">${name}</div>
-        </div>
-        <div class="action-tag">
-          기도제목 보기
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-        </div>
-      `;
-
-      card.onclick = () => {
-        currentModalIndex = index;
-        updateModalImage();
-        modal.style.display = 'flex';
-      };
-
-      container.appendChild(card);
-    });
-
-    updateTreeUI();
+  const dateDisplay = document.getElementById('dateDisplay');
+  if (dateDisplay) {
+    const dateOptions = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' };
+    dateDisplay.textContent = today.toLocaleDateString('ko-KR', dateOptions);
   }
+
+  // 전체 명단을 겹치지 않는 순서(무작위 셔플)로 계속 이어지는 하나의 긴 배열처럼 다룹니다.
+  const baseSeed = 12345; // 고정 시드
+  const utcDays = Math.floor(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) / (24 * 60 * 60 * 1000));
+  
+  // 전체를 순환하는 거대한 시퀀스에서 오늘의 5명 시작 위치 계산
+  const globalStartIndex = utcDays * SHOW_COUNT;
+
+  todayCards = [];
+  for (let i = 0; i < SHOW_COUNT; i++) {
+    const currentIndex = globalStartIndex + i;
+    const cycleIndex = Math.floor(currentIndex / TOTAL_CARDS);
+    const indexInCycle = currentIndex % TOTAL_CARDS;
+
+    // 주기(Cycle)마다 새로운 셔플 배열 생성
+    const cycleRandom = seededRandom(baseSeed + cycleIndex * 99991);
+    let shuffledCards = Array.from({ length: TOTAL_CARDS }, (_, k) => k + 1);
+    
+    for (let j = shuffledCards.length - 1; j > 0; j--) {
+      const r = Math.floor(cycleRandom() * (j + 1));
+      [shuffledCards[j], shuffledCards[r]] = [shuffledCards[r], shuffledCards[j]];
+    }
+
+    todayCards.push(shuffledCards[indexInCycle]);
+  }
+
+  // 화면 카드 생성
+  container.innerHTML = '';
+  todayCards.forEach((num, index) => {
+    const card = document.createElement('div');
+    card.className = 'name-card';
+    const name = memberNames[num - 1] || `기도제목 ${num}`;
+
+    card.innerHTML = `
+      <div class="name-info">
+        <div class="name-num">${index + 1}</div>
+        <div class="name-text">${name}</div>
+      </div>
+      <div class="action-tag">
+        기도제목 보기
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </div>
+    `;
+
+    card.onclick = () => {
+      currentModalIndex = index;
+      updateModalImage();
+      modal.style.display = 'flex';
+    };
+
+    container.appendChild(card);
+  });
+
+  updateTreeUI();
+}
 
   function updateModalImage() {
     const currentCardNum = todayCards[currentModalIndex];
